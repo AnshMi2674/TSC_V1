@@ -77,8 +77,8 @@ A physical scientific calculator running on a NodeMCU-32S (ESP32), driven entire
 ### Clone and Flash
 
 ```bash
-git clone https://github.com/AnshMi2674/ESP32-SciCalc.git
-cd ESP32-SciCalc
+git clone https://github.com/AnshMi2674/TSC_V1.git
+cd TSC_V1
 ```
 
 Open `ScientificCalculator.ino` in Arduino IDE.
