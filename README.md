@@ -27,7 +27,6 @@ A physical scientific calculator running on a NodeMCU-32S (ESP32), driven entire
 - **Equation solvers** — Linear, Quadratic, Cubic (Newton-Raphson + synthetic division), Cramer's Rule 2×2, Cramer's Rule 3×3
 - **SHIFT layer** — secondary functions on existing keys (`csc(`, `sec(`, `cot(`, clear, recall answer)
 - **Expression scroll** — expressions longer than 16 chars scroll horizontally on the LCD
-- **Secret formula menu** — type `13042008` + `=` to access a hidden formula browser (DECA and EP subjects, 4 and 3 chapters respectively, 20 formula slots each)
 - **Runtime secret code change** — `SHIFT + .` lets you change the trigger code without reflashing
 - **UART debug output** — every keypress logged with timestamp to Serial at 115200 baud
 
@@ -133,18 +132,14 @@ ratio between term i and term i-1: -x² / ((2i)(2i+1))
 
 The angle is first normalised to `(-π, π]` by `norm_angle()` to ensure the series converges within 7 iterations to better than 1e-9 accuracy. This avoids including `<math.h>` trig for the forward functions — only the inverse trig (`asin`, `acos`, `atan`) delegates to stdlib since their series are less well-conditioned.
 
-### Secret Menu — State Machine
-
-The formula browser is implemented as a 5-state finite state machine (`SM_OFF → SM_SUBJECT → SM_CHAPTER → SM_FORMULA → SM_SHOW`). Rather than having a separate blocking loop, `secret_handle_key()` is called once per keypress and transitions state based on the current state and key. This keeps the main `loop()` non-blocking. `handle_key()` checks `secret_active()` first on every call and short-circuits all other key routing while the menu is open.
-
 ---
 
 ## Project Structure
 
 ```
 ESP32-SciCalc/
-├── ScientificCalculator.ino   # Main firmware — all sections in one file
-├── formula_data.h             # Formula database — fill in your formulas here
+├── SciCalculator.ino   # Main firmware — all sections in one file
+├── Schematic.png            
 └── README.md
 ```
 
@@ -164,13 +159,12 @@ ESP32-SciCalc/
 | 9 — Application State | Global expression buffer, mode, scroll state |
 | 10 — LCD Helpers | `display_update()`, `display_line2()` |
 | 11 — Expression Buffer | `expr_append()`, `expr_backspace()`, `expr_clear()` |
-| 12 — Secret Menu | State machine + display functions for formula browser |
-| 13 — Coefficient Input | `collect_coeff()` — blocking loop for solver input |
-| 14 — Change Secret Code | `change_sCode()` — blocking loop for code change |
-| 15 — Solver Runners | `run_linear()`, `run_quadratic()`, `run_cubic()`, `run_cramer2()`, `run_cramer3()` |
-| 16 — Expression Evaluation | `evaluate_expression()` — top-level eval + secret trigger check |
-| 17 — Key Handler | `handle_key()` — full key routing with priority order |
-| 18 — Setup & Loop | `setup()`, `loop()` |
+| 12 — Coefficient Input | `collect_coeff()` — blocking loop for solver input |
+| 13 — Change Secret Code | `change_sCode()` — blocking loop for code change |
+| 14 — Solver Runners | `run_linear()`, `run_quadratic()`, `run_cubic()`, `run_cramer2()`, `run_cramer3()` |
+| 15 — Expression Evaluation | `evaluate_expression()` — top-level eval + secret trigger check |
+| 16 — Key Handler | `handle_key()` — full key routing with priority order |
+| 17 — Setup & Loop | `setup()`, `loop()` |
 
 ---
 
@@ -192,7 +186,6 @@ ESP32-SciCalc/
 
 ## Roadmap
 
-- [ ] Populate `formula_data.h` with actual DECA and EP formulas
 - [ ] Rewrite firmware as bare-metal ESP-IDF v5 (no Arduino layer) after completing FreeRTOS study
 - [ ] Add PCB design (KiCad) to replace breadboard
 - [ ] Add complex number support to the expression evaluator
